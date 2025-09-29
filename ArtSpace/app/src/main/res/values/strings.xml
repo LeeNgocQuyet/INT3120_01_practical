@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Art Space</string>
+
+    <string name="cat1">cat1</string>
+    <string name="cat2">cat2</string>
+    <string name="cat3">cat3</string>
+    <string name="cat4">cat4</string>
+    <string name="cat5">cat5</string>
+    <string name="cat6">cat6</string>
+</resources>
