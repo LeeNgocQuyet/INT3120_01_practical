@@ -85,8 +85,7 @@ private val DarkColors = darkColorScheme(
 @Composable
 fun SuperheroesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    // Dynamic color in this app is turned off for learning purposes
+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
