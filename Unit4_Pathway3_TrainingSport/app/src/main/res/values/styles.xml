@@ -1,0 +1,6 @@
+<resources>
+    <style name="CodeFont">
+        <item name="android:typeface">monospace</item>
+        <item name="android:textColor">#D7D6D7</item>
+    </style>
+</resources>
