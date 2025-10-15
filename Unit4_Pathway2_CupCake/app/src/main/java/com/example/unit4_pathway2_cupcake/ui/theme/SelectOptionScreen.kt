@@ -26,12 +26,6 @@ import com.example.cupcake.R
 import com.example.unit4_pathway2_cupcake.ui.theme.components.FormattedPriceLabel
 import com.example.unit4_pathway2_cupcake.ui.theme.CupcakeTheme
 
-/**
- * Composable that displays the list of items as [RadioButton] options,
- * [onSelectionChanged] lambda that notifies the parent composable when a new value is selected,
- * [onCancelButtonClicked] lambda that cancels the order when user clicks cancel and
- * [onNextButtonClicked] lambda that triggers the navigation to next screen
- */
 @Composable
 fun SelectOptionScreen(
     subtotal: String,

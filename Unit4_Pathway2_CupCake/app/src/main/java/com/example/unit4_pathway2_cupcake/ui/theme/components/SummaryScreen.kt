@@ -25,11 +25,7 @@ import com.example.unit4_pathway2_cupcake.data.OrderUiState
 import com.example.unit4_pathway2_cupcake.ui.theme.components.FormattedPriceLabel
 import com.example.unit4_pathway2_cupcake.ui.theme.CupcakeTheme
 
-/**
- * This composable expects [orderUiState] that represents the order state, [onCancelButtonClicked]
- * lambda that triggers canceling the order and passes the final order to [onSendButtonClicked]
- * lambda
- */
+
 @Composable
 fun OrderSummaryScreen(
     orderUiState: OrderUiState,

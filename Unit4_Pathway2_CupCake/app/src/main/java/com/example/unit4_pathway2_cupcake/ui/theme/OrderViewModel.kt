@@ -17,6 +17,14 @@ private const val PRICE_PER_CUPCAKE = 2.00
 /** Additional cost for same day pickup of an order */
 private const val PRICE_FOR_SAME_DAY_PICKUP = 3.00
 
+private val FLAVOR_EXTRA_PRICE = mapOf(
+    "Vanilla" to 0.0,
+    "Chocolate" to 1.0,
+    "Red Velvet" to 1.5,
+    "Salted Caramel" to 2.0,
+    "Coffee" to 2.5
+)
+
 /**
  * [OrderViewModel] holds information about a cupcake order in terms of quantity, flavor, and
  * pickup date. It also knows how to calculate the total price based on these order details.
@@ -47,7 +55,14 @@ class OrderViewModel : ViewModel() {
      */
     fun setFlavor(desiredFlavor: String) {
         _uiState.update { currentState ->
-            currentState.copy(flavor = desiredFlavor)
+            val updatedState = currentState.copy(flavor = desiredFlavor)
+            updatedState.copy(
+                price = calculatePrice(
+                    quantity = updatedState.quantity,
+                    flavor = updatedState.flavor,
+                    pickupDate = updatedState.date
+                )
+            )
         }
     }
 
@@ -56,9 +71,13 @@ class OrderViewModel : ViewModel() {
      */
     fun setDate(pickupDate: String) {
         _uiState.update { currentState ->
-            currentState.copy(
-                date = pickupDate,
-                price = calculatePrice(pickupDate = pickupDate)
+            val updatedState = currentState.copy(date = pickupDate)
+            updatedState.copy(
+                price = calculatePrice(
+                    quantity = updatedState.quantity,
+                    flavor = updatedState.flavor,
+                    pickupDate = updatedState.date
+                )
             )
         }
     }
@@ -75,13 +94,22 @@ class OrderViewModel : ViewModel() {
      */
     private fun calculatePrice(
         quantity: Int = _uiState.value.quantity,
-        pickupDate: String = _uiState.value.date
+        pickupDate: String = _uiState.value.date,
+        flavor: String = _uiState.value.flavor
     ): String {
         var calculatedPrice = quantity * PRICE_PER_CUPCAKE
-        // If the user selected the first option (today) for pickup, add the surcharge
-        if (pickupOptions()[0] == pickupDate) {
+
+        val flavorExtra = FLAVOR_EXTRA_PRICE[flavor] ?: 0.0
+        calculatedPrice += quantity * flavorExtra
+        /*
+        if (pickupOptions().firstOrNull() == pickupDate) {
             calculatedPrice += PRICE_FOR_SAME_DAY_PICKUP
         }
+        */
+        val index = pickupOptions().indexOf(pickupDate)
+        val dayExtra = if (index >= 0) index.toDouble() else 0.0
+        calculatedPrice += PRICE_FOR_SAME_DAY_PICKUP * dayExtra
+
         val formattedPrice = NumberFormat.getCurrencyInstance().format(calculatedPrice)
         return formattedPrice
     }

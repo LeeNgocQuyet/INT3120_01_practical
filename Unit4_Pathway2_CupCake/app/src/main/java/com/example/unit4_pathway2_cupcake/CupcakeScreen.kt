@@ -168,7 +168,6 @@ private fun cancelOrderAndNavigateToStart(
 }
 
 private fun shareOrder(context: Context, subject: String, summary: String) {
-    // Create an ACTION_SEND implicit intent with order details in the intent extras
     val intent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
         putExtra(Intent.EXTRA_SUBJECT, subject)
