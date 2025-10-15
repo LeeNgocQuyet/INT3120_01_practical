@@ -1,4 +1,4 @@
-package com.example.unit5_pathway1_marsphotos.ui.theme
+package com.example.unit5_pathway2_amphibians.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
