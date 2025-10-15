@@ -3,6 +3,7 @@ package com.example.unit4_pathway3_trainingsport.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,9 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -57,6 +61,8 @@ import com.example.unit4_pathway3_trainingsport.data.LocalSportsDataProvider
 import com.example.unit4_pathway3_trainingsport.model.Sport
 import com.example.unit4_pathway3_trainingsport.ui.theme.SportsTheme
 import com.example.unit4_pathway3_trainingsport.utils.SportsContentType
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 
 /**
  * Main composable that serves as container
@@ -69,6 +75,8 @@ fun SportsApp(
 ) {
     val viewModel: SportsViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
+    val totalCalories by viewModel.totalCaloriesThisWeek.collectAsState()
+
     val contentType = when (windowSize) {
         WindowWidthSizeClass.Compact,
         WindowWidthSizeClass.Medium -> SportsContentType.ListOnly
@@ -80,43 +88,49 @@ fun SportsApp(
     Scaffold(
         topBar = {
             SportsAppBar(
-                isShowingListPage = uiState.isShowingListPage,
                 onBackButtonClick = { viewModel.navigateToListPage() },
-                windowSize = windowSize
+                isShowingListPage = uiState.isShowingListPage,
+                windowSize = windowSize,
+                isSelectionModeActive = uiState.isSelectionModeActive,
+                selectedCount = uiState.selectedSports.size,
+                onToggleSelectionMode = { viewModel.toggleSelectionMode() }
             )
         }
     ) { innerPadding ->
-        if (contentType == SportsContentType.ListAndDetail) {
-            SportsListAndDetail(
-                sports = uiState.sportsList,
-                selectedSport = uiState.currentSport,
-                onClick = {
-                    viewModel.updateCurrentSport(it)
-                },
-                onBackPressed = onBackPressed,
-                contentPadding = innerPadding,
-                modifier = Modifier.fillMaxWidth()
-            )
-        } else {
-            if (uiState.isShowingListPage) {
-                SportsList(
+        Box(modifier = Modifier.fillMaxWidth()) {
+            if (contentType == SportsContentType.ListAndDetail) {
+                SportsListAndDetail(
                     sports = uiState.sportsList,
-                    onClick = {
-                        viewModel.updateCurrentSport(it)
-                        viewModel.navigateToDetailPage()
+                    selectedSport = uiState.currentSport,
+                    onClick = { sport ->
+                        viewModel.updateCurrentSport(sport)
                     },
-                    modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_medium)),
+                    onBackPressed = onBackPressed,
                     contentPadding = innerPadding,
+                    modifier = Modifier.fillMaxWidth()
                 )
             } else {
-                SportsDetail(
-                    selectedSport = uiState.currentSport,
-                    contentPadding = innerPadding,
-                    onBackPressed = {
-                        viewModel.navigateToListPage()
-                    }
-                )
+                if (uiState.isShowingListPage) {
+                    SportsList(
+                        sports = uiState.sportsList,
+                        onClick = {
+                            viewModel.updateCurrentSport(it)
+                            viewModel.navigateToDetailPage()
+                        },
+                        onSelect = { viewModel.toggleSportSelection(it) },
+                        selectedSports = uiState.selectedSports,
+                        modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_medium)),
+                        contentPadding = innerPadding,
+                    )
+                } else {
+                    SportsDetail(
+                        selectedSport = uiState.currentSport,
+                        contentPadding = innerPadding,
+                        onBackPressed = { viewModel.navigateToListPage() }
+                    )
+                }
             }
+            FloatingCalorieBox(totalCalories = totalCalories)
         }
     }
 }
@@ -124,29 +138,45 @@ fun SportsApp(
 /**
  * Composable that displays the topBar and displays back button if back navigation is possible.
  */
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SportsAppBar(
     onBackButtonClick: () -> Unit,
     isShowingListPage: Boolean,
     windowSize: WindowWidthSizeClass,
+    isSelectionModeActive: Boolean,
+    selectedCount: Int,
+    onToggleSelectionMode: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isShowingDetailPage = windowSize != WindowWidthSizeClass.Expanded && !isShowingListPage
+
     TopAppBar(
         title = {
-            Text(
-                text =
-                if (isShowingDetailPage) {
-                    stringResource(R.string.detail_fragment_label)
-                } else {
-                    stringResource(R.string.list_fragment_label)
-                },
-                fontWeight = FontWeight.Bold
-            )
+            if (isSelectionModeActive) {
+                Text(text = "$selectedCount đã chọn")
+            } else {
+                Text(
+                    text = if (isShowingDetailPage) {
+                        stringResource(R.string.detail_fragment_label)
+                    } else {
+                        stringResource(R.string.list_fragment_label)
+                    },
+                    fontWeight = FontWeight.Bold
+                )
+            }
         },
-        navigationIcon = if (isShowingDetailPage) {
-            {
+        navigationIcon = {
+            if (isSelectionModeActive) {
+                IconButton(onClick = onToggleSelectionMode) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = "Thoát chế độ chọn"
+                    )
+                }
+            } else if (isShowingDetailPage) {
                 IconButton(onClick = onBackButtonClick) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
@@ -154,8 +184,16 @@ fun SportsAppBar(
                     )
                 }
             }
-        } else {
-            { Box {} }
+        },
+        actions = {
+            if (!isSelectionModeActive && isShowingListPage) {
+                IconButton(onClick = onToggleSelectionMode) {
+                    Icon(
+                        imageVector = Icons.Filled.CheckCircle,
+                        contentDescription = "Vào chế độ chọn"
+                    )
+                }
+            }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary
@@ -169,18 +207,27 @@ fun SportsAppBar(
 private fun SportsListItem(
     sport: Sport,
     onItemClick: (Sport) -> Unit,
+    isSelected: Boolean,
+    isSelectionModeActive: Boolean,
     modifier: Modifier = Modifier
 ) {
     Card(
         elevation = CardDefaults.cardElevation(),
         modifier = modifier,
         shape = RoundedCornerShape(dimensionResource(R.dimen.card_corner_radius)),
-        onClick = { onItemClick(sport) }
+        onClick = {
+            onItemClick(sport) }
     ) {
+        val backgroundColor = if (isSelected) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .size(dimensionResource(R.dimen.card_image_height))
+                .background(backgroundColor)
         ) {
             SportsListImageItem(
                 sport = sport,
@@ -247,6 +294,8 @@ private fun SportsListImageItem(sport: Sport, modifier: Modifier = Modifier) {
 private fun SportsList(
     sports: List<Sport>,
     onClick: (Sport) -> Unit,
+    onSelect: (Sport) -> Unit,
+    selectedSports: Set<Sport>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -258,7 +307,9 @@ private fun SportsList(
         items(sports, key = { sport -> sport.id }) { sport ->
             SportsListItem(
                 sport = sport,
-                onItemClick = onClick
+                onItemClick = onClick,
+                isSelected = selectedSports.contains(sport),
+                isSelectionModeActive = true,
             )
         }
     }
@@ -346,6 +397,27 @@ private fun SportsDetail(
                     horizontal = dimensionResource(R.dimen.padding_detail_content_horizontal)
                 )
             )
+            Text(
+                text = "Calo tiêu thụ mỗi giờ: ${selectedSport.caloriesPerHour} kcal",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_medium))
+            )
+
+            Text(
+                text = "Số giờ chơi mỗi tuần: ${selectedSport.hoursPerWeek}",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_medium))
+            )
+
+            Text(
+                text = "Tổng calo tiêu thụ mỗi tuần: ${selectedSport.totalCaloriesPerWeek} kcal",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(R.dimen.padding_medium),
+                    vertical = dimensionResource(R.dimen.padding_small)
+                )
+            )
         }
     }
 }
@@ -357,7 +429,7 @@ private fun SportsListAndDetail(
     onClick: (Sport) -> Unit,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
+    contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     Row(
         modifier = modifier
@@ -365,6 +437,8 @@ private fun SportsListAndDetail(
         SportsList(
             sports = sports,
             onClick = onClick,
+            onSelect = {},
+            selectedSports = emptySet(),
             contentPadding = PaddingValues(
                 top = contentPadding.calculateTopPadding(),
             ),
@@ -383,29 +457,6 @@ private fun SportsListAndDetail(
     }
 }
 
-@Preview
-@Composable
-fun SportsListItemPreview() {
-    SportsTheme {
-        SportsListItem(
-            sport = LocalSportsDataProvider.defaultSport,
-            onItemClick = {}
-        )
-    }
-}
-
-@Preview
-@Composable
-fun SportsListPreview() {
-    SportsTheme {
-        Surface {
-            SportsList(
-                sports = LocalSportsDataProvider.getSportsData(),
-                onClick = {},
-            )
-        }
-    }
-}
 
 @Preview(name = "Tablet Preview",
     device = "spec:width=1280px,height=800px,dpi=240")
@@ -421,6 +472,31 @@ fun SportsListAndDetailsPreview() {
                 onClick = {},
                 onBackPressed = {},
             )
+        }
+    }
+}
+
+@Composable
+fun FloatingCalorieBox(totalCalories: Int) {
+    if (totalCalories > 0) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                Text(
+                    text = "Tổng calo tiêu thụ: $totalCalories kcal/tuần",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.padding(12.dp)
+                )
+            }
         }
     }
 }

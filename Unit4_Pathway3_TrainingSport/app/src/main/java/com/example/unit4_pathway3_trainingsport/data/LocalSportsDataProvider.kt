@@ -19,7 +19,9 @@ object LocalSportsDataProvider{
                 olympic = true,
                 imageResourceId = R.drawable.ic_baseball_square,
                 sportsImageBanner = R.drawable.ic_baseball_banner,
-                sportDetails = R.string.sport_detail_text
+                sportDetails = R.string.sport_detail_text,
+                caloriesPerHour = 500,
+                hoursPerWeek = 3
             ),
             Sport(
                 id = 2,
@@ -30,6 +32,9 @@ object LocalSportsDataProvider{
                 imageResourceId = R.drawable.ic_badminton_square,
                 sportsImageBanner = R.drawable.ic_badminton_banner,
                 sportDetails = R.string.sport_detail_text
+                ,
+                caloriesPerHour = 600,
+                hoursPerWeek = 2
             ),
             Sport(
                 id = 3,
@@ -40,6 +45,9 @@ object LocalSportsDataProvider{
                 imageResourceId = R.drawable.ic_basketball_square,
                 sportsImageBanner = R.drawable.ic_basketball_banner,
                 sportDetails = R.string.sport_detail_text
+                ,
+                caloriesPerHour = 550,
+                hoursPerWeek = 3
             ),
             Sport(
                 id = 4,
@@ -50,6 +58,9 @@ object LocalSportsDataProvider{
                 imageResourceId = R.drawable.ic_bowling_square,
                 sportsImageBanner = R.drawable.ic_bowling_banner,
                 sportDetails = R.string.sport_detail_text
+                ,
+                caloriesPerHour = 650,
+                hoursPerWeek = 2
             ),
             Sport(
                 id = 5,
@@ -60,6 +71,9 @@ object LocalSportsDataProvider{
                 imageResourceId = R.drawable.ic_cycling_square,
                 sportsImageBanner = R.drawable.ic_cycling_banner,
                 sportDetails = R.string.sport_detail_text
+                ,
+                caloriesPerHour = 400,
+                hoursPerWeek = 4
             ),
             Sport(
                 id = 6,
@@ -70,6 +84,9 @@ object LocalSportsDataProvider{
                 imageResourceId = R.drawable.ic_golf_square,
                 sportsImageBanner = R.drawable.ic_golf_banner,
                 sportDetails = R.string.sport_detail_text
+                ,
+                caloriesPerHour = 300,
+                hoursPerWeek = 5
             ),
             Sport(
                 id = 7,
@@ -80,6 +97,9 @@ object LocalSportsDataProvider{
                 imageResourceId = R.drawable.ic_running_square,
                 sportsImageBanner = R.drawable.ic_running_banner,
                 sportDetails = R.string.sport_detail_text
+                ,
+                caloriesPerHour = 350,
+                hoursPerWeek = 4
             ),
             Sport(
                 id = 8,
@@ -90,6 +110,9 @@ object LocalSportsDataProvider{
                 imageResourceId = R.drawable.ic_soccer_square,
                 sportsImageBanner = R.drawable.ic_soccer_banner,
                 sportDetails = R.string.sport_detail_text
+                ,
+                caloriesPerHour = 250,
+                hoursPerWeek = 6
             ),
             Sport(
                 id = 9,
@@ -100,6 +123,9 @@ object LocalSportsDataProvider{
                 imageResourceId = R.drawable.ic_swimming_square,
                 sportsImageBanner = R.drawable.ic_swimming_banner,
                 sportDetails = R.string.sport_detail_text
+                ,
+                caloriesPerHour = 475,
+                hoursPerWeek = 3
             ),
             Sport(
                 id = 10,
@@ -110,6 +136,9 @@ object LocalSportsDataProvider{
                 imageResourceId = R.drawable.ic_table_tennis_square,
                 sportsImageBanner = R.drawable.ic_table_tennis_banner,
                 sportDetails = R.string.sport_detail_text
+                ,
+                caloriesPerHour = 525,
+                hoursPerWeek = 3
             ),
             Sport(
                 id = 11,
@@ -120,6 +149,9 @@ object LocalSportsDataProvider{
                 imageResourceId = R.drawable.ic_tennis_square,
                 sportsImageBanner = R.drawable.ic_tennis_banner,
                 sportDetails = R.string.sport_detail_text
+                ,
+                caloriesPerHour = 575,
+                hoursPerWeek = 3
             )
         )
     }

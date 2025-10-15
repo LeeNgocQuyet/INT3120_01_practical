@@ -8,11 +8,16 @@ import androidx.annotation.StringRes
  */
 data class Sport(
     val id: Int,
-    @StringRes val titleResourceId: Int,
-    @StringRes val subtitleResourceId: Int,
+    val titleResourceId: Int,
+    val subtitleResourceId: Int,
     val playerCount: Int,
     val olympic: Boolean,
-    @DrawableRes val imageResourceId: Int,
-    @DrawableRes val sportsImageBanner: Int,
-    @StringRes val sportDetails: Int
-)
+    val imageResourceId: Int,
+    val sportsImageBanner: Int,
+    val sportDetails: Int,
+    val caloriesPerHour: Int = 0,
+    val hoursPerWeek: Int = 0
+){
+    val totalCaloriesPerWeek: Int
+        get() = caloriesPerHour * hoursPerWeek
+}
