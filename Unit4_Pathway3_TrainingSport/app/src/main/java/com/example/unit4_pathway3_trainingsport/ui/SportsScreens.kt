@@ -462,7 +462,7 @@ private fun SportsListAndDetail(
     device = "spec:width=1280px,height=800px,dpi=240")
 @Composable
 fun SportsListAndDetailsPreview() {
-    SportsTheme {
+    theme {
         Surface {
             SportsListAndDetail(
                 sports = LocalSportsDataProvider.getSportsData(),
