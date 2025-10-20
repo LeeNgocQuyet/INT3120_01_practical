@@ -1,10 +1,10 @@
-Dessert Release App - Solution Code
+Dessert Release App - Starter Code
 =================================
-Solution code for the Android Basics with Compose: Dessert Release app.
+Starter code for the Android Basics with Compose: Dessert Release app.
 
 Introduction
 ------------
-The Dessert Release app is a simple app which displays a collection of Android dessert releases. 
+The Dessert Release app is a simple app which displays a collection of Android dessert releases.
 This app is used to teach the concept of Preferences DataStore.
 
 Pre-requisites
